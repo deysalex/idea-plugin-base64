@@ -34,6 +34,7 @@ public class Base64ToolWindowFactory implements ToolWindowFactory {
             Executors.newScheduledThreadPool(1);
 
     public Base64ToolWindowFactory() {
+
         encodeText.addFocusListener(new FocusListener() {
             private ScheduledFuture<?> decodeHandle;
 
@@ -63,24 +64,11 @@ public class Base64ToolWindowFactory implements ToolWindowFactory {
         });
     }
 
-    public void createToolWindowContent(Project project, ToolWindow toolWindow) {
-        myToolWindow = toolWindow;
-
-        ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
-        Content content = contentFactory.createContent(myToolWindowContent, "", false);
-        toolWindow.getContentManager().addContent(content);
-    }
-
     private ScheduledFuture<?> decodeText(JTextArea from, JTextArea to) {
         final ComparableRunnable<String> decoder = new ComparableRunnable<String>() {
             @Override
-            public void run(String newValue) {
-                try {
-                    byte[] decode = Base64.getDecoder().decode(newValue);
-                    to.setText(new String(decode, StandardCharsets.UTF_8));
-                } catch (IllegalArgumentException ignore) {
-                    //ignore
-                }
+            public void run(String value) {
+                to.setText(decode(value));
             }
 
             @Override
@@ -94,13 +82,8 @@ public class Base64ToolWindowFactory implements ToolWindowFactory {
     private ScheduledFuture<?> encodeText(JTextArea from, JTextArea to) {
         final ComparableRunnable<String> encoder = new ComparableRunnable<String>() {
             @Override
-            public void run(String newValue) {
-                try {
-                    byte[] encode = Base64.getEncoder().encode(newValue.getBytes(StandardCharsets.UTF_8));
-                    from.setText(new String(encode, StandardCharsets.UTF_8));
-                } catch (IllegalArgumentException ignore) {
-                    //ignore
-                }
+            public void run(String value) {
+                from.setText(encode(value));
             }
 
             @Override
@@ -109,6 +92,24 @@ public class Base64ToolWindowFactory implements ToolWindowFactory {
             }
         };
         return scheduler.scheduleAtFixedRate(encoder, 1, 1, TimeUnit.SECONDS);
+    }
+
+    public void createToolWindowContent(Project project, ToolWindow toolWindow) {
+        myToolWindow = toolWindow;
+
+        ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
+        Content content = contentFactory.createContent(myToolWindowContent, "", false);
+        toolWindow.getContentManager().addContent(content);
+    }
+
+    private static String decode(String data) {
+        byte[] decode = Base64.getDecoder().decode(data);
+        return new String(decode, StandardCharsets.UTF_8);
+    }
+
+    private static String encode(String data) {
+        byte[] encode = Base64.getEncoder().encode(data.getBytes(StandardCharsets.UTF_8));
+        return new String(encode, StandardCharsets.UTF_8);
     }
 
 }

@@ -8,15 +8,20 @@ public abstract class ComparableRunnable<T> implements Runnable {
 
     @Override
     public void run() {
-        T newValue = getValue();
-        if (Objects.equals(oldValue, newValue)) {
+        T value = getValue();
+        if (Objects.equals(oldValue, value)) {
             return;
         }
-        oldValue = newValue;
-        run(newValue);
+        oldValue = value;
+        try {
+            run(value);
+        } catch (Exception ignore) {
+            //ignore
+        }
     }
 
-    public abstract void run(T newValue);
+    public abstract void run(T value) throws Exception;
 
     public abstract T getValue();
+
 }
