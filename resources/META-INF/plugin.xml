@@ -1,7 +1,7 @@
 <idea-plugin>
-  <id>ru.deysa.plugin.id</id>
+  <id>ru.deysa.plugin.base64.id</id>
   <name>Base64 encode/decode</name>
-  <version>1.2</version>
+  <version>1.2.1</version>
   <vendor email="deysalex@gmail.com" url="http://www.deysa.ru">DeysAlex</vendor>
 
   <description><![CDATA[
